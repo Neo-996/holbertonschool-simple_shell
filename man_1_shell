@@ -1,0 +1,117 @@
+NAME
+    simple_shell - a simple command line interpreter for UNIX systems that executes single-word commands without arguments.
+
+SYNOPSIS
+    simple_shell
+
+DESCRIPTION
+    simple_shell is a basic UNIX-like shell designed to interpret single-word commands without arguments. It continuously displays a prompt ($), waits for user input, executes the command in a new process, and repeats the process until the user exits. The shell does not support advanced features such as piping, redirection, or handling multiple arguments for commands.
+
+    Features
+        - Displays a $ prompt.
+        - Reads commands using getline.
+        - Executes single-word commands using execve.
+        - Handles errors if the command is not found.
+        - Gracefully handles EOF (Ctrl+D) to exit the shell.
+        - Loops indefinitely, displaying the prompt after each command.
+
+USAGE
+    To run the shell, simply execute the compiled simple_shell program. The shell will start and display a prompt for the user to enter a command.
+
+    Example Usage
+1. Running the Shell
+        After compiling and running simple_shell, the shell will display the prompt ($) and wait for a command.
+	$ ./simple_shell
+        $ ls
+
+        This will list the files in the current directory.
+ 2. Error Handling for Command Not Found
+        If the user types a command that does not exist, the shell will display an error message:
+
+        $ non_existent_command
+        simple_shell: 1: non_existent_command: not found
+        $
+
+    3. EOF Handling (Ctrl+D)
+        Pressing Ctrl+D (end-of-file) will cause the shell to exit gracefully:
+
+        $
+
+        After pressing Ctrl+D, the shell exits.
+EXIT STATUS
+    0: The command was executed successfully.
+    1: The command could not be found, or an error occurred during execution (e.g., fork() or execve() failure).
+
+INTERNALS
+    The simple_shell program is implemented with the following steps:
+
+    1. Prompt Display
+        The shell displays a prompt ($) when running interactively. This prompt is shown before each user input.
+
+    2. Reading Input
+        The input is read from the user using the getline() function, which dynamically allocates memory to hold the input string.
+1. Prompt Display
+        The shell displays a prompt ($) when running interactively. This prompt is shown before each user input.
+
+    2. Reading Input
+        The input is read from the user using the getline() function, which dynamically allocates memory to hold the input string.
+
+    3. Tokenization
+        The input is split into tokens (in this case, only a single command without arguments). The tokenize_input() function is responsible for splitting the input string into an array of tokens (commands).
+
+    4. Command Execution
+        Once the input is tokenized, the program attempts to execute the command using the execve() system call. If the command is found, it runs in a child process created by fork(). If the command is not found, an error message is displayed.
+
+ 5. Error Handling
+        If the command cannot be executed or found, the shell prints an error message in the format:
+
+        simple_shell: <line_number>: <command>: not found
+
+    6. EOF Handling
+        The shell gracefully handles end-of-file (EOF) when the user presses Ctrl+D. The program exits cleanly when getline() returns -1.
+
+    7. Memory Management
+        The shell allocates memory dynamically for storing the user input and tokenized arguments. After each command execution, the memory is freed.
+FILES
+    simple_shell.c: The main file containing the entry point for the shell. It controls the main program flow, reading input, displaying the prompt, tokenizing the input, and executing the command.
+    tokenizer.c: This file contains the tokenize_input() function that splits the input into tokens (in this case, one token per command).
+    execute.c: This file contains the execute_cmd() function that forks a child process and executes the command using execve().
+    utils.c: Contains utility functions such as free_args() to free dynamically allocated memory.
+
+EXAMPLES
+
+    1. Running the Simple Shell
+        When running simple_shell, the prompt is displayed. After entering a command like ls, the program will execute it and display the prompt again:
+
+        $ ./simple_shell
+        $ ls
+
+        The output will show the contents of the current directory, and then the prompt will be displayed again.
+
+2. Command Not Found
+if the user enteres a command that does not exist, the shell will return an error message with the appropriate line number:
+ $ non_existent_command
+        simple_shell: 1: non_existent_command: not found
+        $
+
+    3. Handling EOF (Ctrl+D)
+        Pressing Ctrl+D will cause the shell to exit gracefully:
+
+        $
+
+        After Ctrl+D is pressed, the shell will terminate.
+SIGNALS
+    SIGINT: If the user presses Ctrl+C, the shell ignores the signal and returns to the prompt, allowing the user to continue entering commands.
+
+CONTRIBUTORS
+    This shell was developed by [Abrar Almukhlifi & Abdulelah Alshehri]. It implements a minimalistic shell with the ability to execute single commands and handle errors. It is suitable for educational purposes and as a starting point for more complex shell implementations.
+
+SEE ALSO
+    execve(2): Executes a program.
+    fork(2): Creates a new process.
+    wait(2): Waits for a process to terminate.
+    getline(3): Reads a line from the user input.
+
+---
+
+END OF MAN PAGE
