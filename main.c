@@ -1,50 +1,44 @@
 #include "shell.h"
 
 /**
- * main - Simple shell entry point
- * Return: int
+ * main - Entry point of the shell
+ * Return: Always 0
  */
-
 int main(void)
 {
-	char *buff = NULL, **args;
-	size_t read_size = 0;
-	ssize_t buff_size = 0;
-	int exit_status = 0;
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+  char **args;
 
-	while (1)
-	{
-		if (isatty(0))
-			printf("hsh$ ");
+  while (1)
+  {
+    if (isatty(STDIN_FILENO))
+      write(STDOUT_FILENO, "($) ", 4);
 
-		buff_size = getline(&buff, &read_size, stdin);
-		if (buff_size == -1 || _strcmp("exit\n", buff) == 0)
-		{
-			free(buff);
-			break;
-		}
-		buff[buff_size - 1] = '\0';
+    read = getline(&line, &len, stdin);
+    if (read == -1)
+    {
+      free(line);
+      exit(0);
+    }
 
-		if (_strcmp("env", buff) == 0)
-		{
-			_env();
-			continue;
-		}
+    args = parse_line(line);
+    if (args[0] != NULL)
+    {
+      if (strcmp(args[0], "exit") == 0)
+      {
+        free(args);
+        free(line);
+        exit(0);
+      }
 
-		if (empty_line(buff) == 1)
-		{
-			exit_status = 0;
-			continue;
-		}
+      execute_cmd(args);
+    }
 
-		args = _split(buff, " ");
-		args[0] = search_path(args[0]);
+    free(args);
+  }
 
-		if (args[0] != NULL)
-			exit_status = execute(args);
-		else
-			perror("Error");
-		free(args);
-	}
-	return (exit_status);
+  free(line);
+  return (0);
 }
