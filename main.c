@@ -2,46 +2,49 @@
 
 /**
  * main - Simple shell entry point
- * @argc: argument count
- * @argv: argument vector
- * Return: 0 on success
+ * Return: int
  */
-int main(int argc, char **argv)
+
+int main(void)
 {
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t nread;
-  int line_num = 0;
-  char **args;
-  (void)argc;
+	char *buff = NULL, **args;
+	size_t read_size = 0;
+	ssize_t buff_size = 0;
+	int exit_status = 0;
 
-  while (1)
-    {
-      line_num++;
-
-      if (isatty(STDIN_FILENO))
-	write(STDOUT_FILENO, "$ ", 2);
-
-      nread = getline(&line, &len, stdin);
-      if (nread == -1)
+	while (1)
 	{
-	  if (isatty(STDIN_FILENO))
-	    write(STDOUT_FILENO, "\n", 1);
-	  break;
+		if (isatty(0))
+			printf("hsh$ ");
+
+		buff_size = getline(&buff, &read_size, stdin);
+		if (buff_size == -1 || _strcmp("exit\n", buff) == 0)
+		{
+			free(buff);
+			break;
+		}
+		buff[buff_size - 1] = '\0';
+
+		if (_strcmp("env", buff) == 0)
+		{
+			_env();
+			continue;
+		}
+
+		if (empty_line(buff) == 1)
+		{
+			exit_status = 0;
+			continue;
+		}
+
+		args = _split(buff, " ");
+		args[0] = search_path(args[0]);
+
+		if (args[0] != NULL)
+			exit_status = execute(args);
+		else
+			perror("Error");
+		free(args);
 	}
-      if (line[nread - 1] == '\n')
-	line[nread - 1] = '\0';
-      
-      tokenize_input(line, &args); /* passing pointer to array */
-      if (!args || !args[0])
-	{
-	  free_args(args);
-	  continue;
-	}
-      
-      execute_cmd(args, argv[0], line_num);
-      free_args(args);
-    }
-  free(line);
-    return (0);
+	return (exit_status);
 }

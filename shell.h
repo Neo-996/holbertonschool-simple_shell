@@ -13,9 +13,16 @@
 extern char **environ;
 
 /* Function Prototypes */
-void execute_cmd(char *line, char *prog_name, int line_num);
-void tokenize_input(char *line, char ***args);
-void free_args(char **args);
-void print_error(char *prog_name, int line_num, char *command);
+int _strcmp(char *s1, char *s2);
+char *_strcpy(char *dest, char *src);
+char *search_path(char *command);
+char **_split(char *str, char *sep);
+char *_strcat(char *dest, char *src);
+int _strlen(char *s);
+char *_getenv(char *env_var);
+void *_calloc(unsigned int nmemb, unsigned int size);
+void _env(void);
+int execute(char **args);
+int empty_line(char *buff);
 
 #endif /* SHELL_H */
