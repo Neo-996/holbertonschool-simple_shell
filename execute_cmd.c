@@ -41,3 +41,4 @@ void execute_cmd(char *line, char *program_name, int line_num)
       waitpid(pid, &status, 0);
       free_args(args);
     }
+}
