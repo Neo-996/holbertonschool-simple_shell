@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 	  continue;
 	}
       
-      execute_cmd(line, argv[0], line_num);
+      execute_cmd(args, argv[0], line_num);
       free_args(args);
     }
   free(line);
