@@ -27,7 +27,7 @@ void tokenize_input(char *line, char ***args)
       /* If we run out of space in the array, reallocate */
       if (i >= bufsize)
 	{
-	   bufsize += 64;  // Increase buffer size
+	  bufsize += 64;  /* Increase buffer size */
 	   *args = realloc(*args, sizeof(char *) * bufsize);
 	   if (!*args)
 	     {
@@ -36,7 +36,7 @@ void tokenize_input(char *line, char ***args)
 	     }
 	}
 
-       token = strtok(NULL, " \t\r\n");  // Get the next token
+      token = strtok(NULL, " \t\r\n");  /* Get the next token */
     }
-  (*args)[i] = NULL;  // Null-terminate the array of strings
+  (*args)[i] = NULL;  /* Null-terminate the array of strings */
 }

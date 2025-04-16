@@ -14,7 +14,7 @@ extern char **environ;
 
 /* Function Prototypes */
 void execute_cmd(char *line, char *prog_name, int line_num);
-char **tokenize_input(char *line);
+void tokenize_input(char *line, char ***args);
 void free_args(char **args);
 void print_error(char *prog_name, int line_num, char *command);
 
