@@ -8,7 +8,7 @@ char **parse_line(char *line)
 
     if (!tokens)
     {
-        fprintf(stderr, "hsh: allocation error\n");
+        perror("hsh");
         exit(EXIT_FAILURE);
     }
 
@@ -22,7 +22,7 @@ char **parse_line(char *line)
             tokens = realloc(tokens, bufsize * sizeof(char *));
             if (!tokens)
             {
-                fprintf(stderr, "hsh: allocation error\n");
+                perror("hsh");
                 exit(EXIT_FAILURE);
             }
         }

@@ -1,10 +1,10 @@
-CC := gcc
-CFLAGS := -Wall -Werror -Wextra -pedantic -std=gnu89
-SRC := main.c execute_cmd.c parse_line.c
-OBJ := $(SRC:.c=.o)
-NAME := hsh
+CC = gcc
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89
+SRC = main.c execute_cmd.c parse_line.c
+OBJ = $(SRC:.c=.o)
+NAME = hsh
 
-.PHONY: all clean oclean fclean re
+.PHONY: all clean fclean re
 
 all: $(NAME)
 
@@ -21,6 +21,3 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
-
-betty:
-	betty *.c *.h

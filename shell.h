@@ -8,13 +8,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-
-/* Declare environ if not available */
-extern char **environ;
+#include <errno.h>
 
 /* Function prototypes */
 char **parse_line(char *line);
 int execute_cmd(char **args);
-char *find_command(char *command);
+int shell_exit(char **args);
 
 #endif /* SHELL_H */

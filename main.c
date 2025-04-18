@@ -7,16 +7,17 @@ int main(void)
     ssize_t read;
     char **args = NULL;
     int status = 0;
+    int interactive = isatty(STDIN_FILENO);
 
     while (1)
     {
-        if (isatty(STDIN_FILENO))
+        if (interactive)
             write(STDOUT_FILENO, "($) ", 4);
 
         read = getline(&line, &len, stdin);
         if (read == -1)
         {
-            if (isatty(STDIN_FILENO))
+            if (interactive)
                 write(STDOUT_FILENO, "\n", 1);
             free(line);
             exit(status);
@@ -34,6 +35,7 @@ int main(void)
         args = NULL;
     }
 
+    /* Never reached but included for completeness */
     free(line);
     return (status);
 }
