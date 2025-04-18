@@ -1,51 +1,43 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 #include "shell.h"
 
 /**
- * find_command - finds the path of a given command
- * @command: the command to search for
- *
- * Return: the full path to the command, or NULL if not found
+ * find_command - Finds a command in PATH
+ * @command: Command to find
+ * Return: Full path if found, NULL otherwise
  */
 char *find_command(char *command)
 {
-char *path_env = NULL;
-char *path_copy, *dir;
-char full_path[1024];
-int i = 0;
+    char *path, *dir, *full_path;
+    struct stat st;
 
-/* search PATH manually inside environ */
+    /* Check if command exists as is */
+    if (stat(command, &st) == 0)
+        return (strdup(command));
 
-while (environ[i])
-{
-if (strncmp(environ[i], "PATH=", 5) == 0)
-{
-path_env = environ[i] + 5;
-break;
-}
-i++;
-}
+    /* Get PATH environment variable */
+    path = getenv("PATH");
+    if (!path)
+        return (NULL);
 
-if (!path_env)
-return (NULL);
+    /* Make copy of PATH to tokenize */
+    path = strdup(path);
+    dir = strtok(path, ":");
 
-path_copy = strdup(path_env);
-dir = strtok(path_copy, ":");
+    while (dir)
+    {
+        full_path = malloc(strlen(dir) + strlen(command) + 2);
+        sprintf(full_path, "%s/%s", dir, command);
 
-while (dir)
-{
-sprintf(full_path, "%s/%s", dir, command);
-if (access(full_path, X_OK) == 0)
-{
-free(path_copy);
-return (strdup(full_path));
-}
-dir = strtok(NULL, ":");
-}
+        if (stat(full_path, &st) == 0)
+        {
+            free(path);
+            return (full_path);
+        }
 
-free(path_copy);
-return (NULL);
+        free(full_path);
+        dir = strtok(NULL, ":");
+    }
+
+    free(path);
+    return (NULL);
 }

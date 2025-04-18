@@ -8,13 +8,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <errno.h>
+
+/* Declare environ if not available */
+extern char **environ;
 
 /* Function prototypes */
 char **parse_line(char *line);
 int execute_cmd(char **args);
-void handle_exit(void);
+char *find_command(char *command);
 
 #endif /* SHELL_H */
