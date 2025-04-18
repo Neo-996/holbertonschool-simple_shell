@@ -1,5 +1,9 @@
 #include "shell.h"
 
+/**
+ * main - Entry point of simple shell
+ * Return: Exit status
+ */
 int main(void)
 {
 	char *line = NULL;

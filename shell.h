@@ -5,15 +5,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <limits.h>
+#include <fcntl.h>
+#include <errno.h>
 
-/* Global environment pointer */
-extern char **environ;
-
-/* Function Prototypes */
+/* Function prototypes */
 char **parse_line(char *line);
-void execute_cmd(char **args);
-extern char **environ;
-char *find_command(char *command);
+int execute_cmd(char **args);
+void handle_exit(void);
 
 #endif /* SHELL_H */

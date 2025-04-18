@@ -1,9 +1,9 @@
 #include "shell.h"
 
 /**
- * handle_exit - Handles the exit built-in command
+ * handle_exit - Handles exit built-in command
  */
-static void handle_exit(void)
+void handle_exit(void)
 {
 	exit(EXIT_SUCCESS);
 }
@@ -11,7 +11,7 @@ static void handle_exit(void)
 /**
  * execute_cmd - Executes a command
  * @args: Argument vector
- * Return: Exit status of the command
+ * Return: Exit status
  */
 int execute_cmd(char **args)
 {
@@ -21,7 +21,6 @@ int execute_cmd(char **args)
 	if (args[0] == NULL)
 		return (0);
 
-	/* Handle exit built-in */
 	if (strcmp(args[0], "exit") == 0)
 		handle_exit();
 
@@ -30,8 +29,8 @@ int execute_cmd(char **args)
 	{
 		if (execvp(args[0], args) == -1)
 		{
-			perror("hsh");
-			exit(127);  /* Command not found */
+			perror(args[0]);
+			exit(127);
 		}
 	}
 	else if (pid < 0)
