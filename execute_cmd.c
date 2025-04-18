@@ -11,14 +11,15 @@ static void handle_exit(void)
 /**
  * execute_cmd - Executes a command
  * @args: Argument vector
+ * Return: Exit status of the command
  */
-void execute_cmd(char **args)
+int execute_cmd(char **args)
 {
 	pid_t pid;
 	int status;
 
 	if (args[0] == NULL)
-		return;
+		return (0);
 
 	/* Handle exit built-in */
 	if (strcmp(args[0], "exit") == 0)
@@ -28,15 +29,22 @@ void execute_cmd(char **args)
 	if (pid == 0)
 	{
 		if (execvp(args[0], args) == -1)
+		{
 			perror("hsh");
-		exit(EXIT_FAILURE);
+			exit(127);  /* Command not found */
+		}
 	}
 	else if (pid < 0)
 	{
 		perror("hsh");
+		return (1);
 	}
 	else
 	{
 		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		return (1);
 	}
+	return (0);
 }

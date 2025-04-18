@@ -1,15 +1,12 @@
 #include "shell.h"
 
-/**
- * main - Entry point of the shell
- * Return: Always 0
- */
 int main(void)
 {
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
 	char **args;
+	int status = 0;
 
 	while (1)
 	{
@@ -20,25 +17,16 @@ int main(void)
 		if (read == -1)
 		{
 			free(line);
-			exit(0);
+			exit(status);
 		}
 
 		args = parse_line(line);
 		if (args[0] != NULL)
-		{
-			if (strcmp(args[0], "exit") == 0)
-			{
-				free(args);
-				free(line);
-				exit(0);
-			}
-
-			execute_cmd(args);
-		}
+			status = execute_cmd(args);
 
 		free(args);
 	}
 
 	free(line);
-	return (0);
+	return (status);
 }
