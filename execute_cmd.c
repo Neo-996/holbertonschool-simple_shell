@@ -1,11 +1,5 @@
 #include "shell.h"
 
-int shell_exit(char **args)
-{
-    (void)args;
-    exit(0);
-}
-
 int execute_cmd(char **args)
 {
     pid_t pid;
@@ -16,7 +10,7 @@ int execute_cmd(char **args)
 
     /* Handle exit built-in */
     if (strcmp(args[0], "exit") == 0)
-        return (shell_exit(args));
+        exit(0);
 
     pid = fork();
     if (pid == 0)
@@ -24,7 +18,7 @@ int execute_cmd(char **args)
         /* Child process */
         if (execvp(args[0], args) == -1)
         {
-            fprintf(stderr, "%s: %s\n", args[0], strerror(errno));
+            fprintf(stderr, "%s: command not found\n", args[0]);
             exit(127);
         }
     }

@@ -4,7 +4,6 @@ int main(void)
 {
     char *line = NULL;
     size_t len = 0;
-    ssize_t read;
     char **args = NULL;
     int status = 0;
     int interactive = isatty(STDIN_FILENO);
@@ -14,28 +13,33 @@ int main(void)
         if (interactive)
             write(STDOUT_FILENO, "($) ", 4);
 
-        read = getline(&line, &len, stdin);
-        if (read == -1)
+        if (getline(&line, &len, stdin) == -1)
         {
+            free(line);
+            line = NULL;
             if (interactive)
                 write(STDOUT_FILENO, "\n", 1);
-            free(line);
             exit(status);
         }
 
         /* Remove newline */
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0';
+        if (line[strlen(line) - 1] == '\n')
+            line[strlen(line) - 1] = '\0';
 
         args = parse_line(line);
         if (args && args[0])
             status = execute_cmd(args);
 
+        /* Clean up */
         free(args);
         args = NULL;
+        free(line);
+        line = NULL;
+        len = 0;
     }
 
-    /* Never reached but included for completeness */
-    free(line);
+    /* Should never reach here */
+    if (line) free(line);
+    if (args) free(args);
     return (status);
 }
