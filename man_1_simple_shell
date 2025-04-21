@@ -1,0 +1,37 @@
+.TH SIMPLE_SHELL 1 "April 2025" "Holberton School" "User Commands"
+.SH NAME
+simple_shell \- a simple UNIX command line interpreter
+.SH SYNOPSIS
+.B ./hsh
+.SH DESCRIPTION
+.B simple_shell
+is a basic implementation of a UNIX command-line interpreter that mimics the behavior of standard shells like sh or bash.
+.SH USAGE
+Run the shell in interactive mode:
+.B ./hsh
+
+Run the shell in non-interactive mode by piping input:
+.B echo "ls" | ./hsh
+.SH FEATURES
+- Executes commands with full path or found in PATH
+- Supports built-in commands:
+    - exit
+    - env
+- Handles input/output errors gracefully
+.SH OPTIONS
+Currently, the shell does not accept any command-line options.
+.SH EXAMPLES
+Interactive:
+\fB$ ./hsh\fR
+\fB($) ls -l\fR
+\fB($) exit\fR
+
+Non-interactive:
+\fB$ echo "ls -l" | ./hsh\fR
+
+.SH AUTHORS
+Abrar Almukhlifi<Abrarsaadalharbi@gmail.com>
+Abdulelah Alshehri<abdulelahmalshehri@gmail.com>
+
+.SH SEE ALSO
+sh(1), bash(1), execve(2), fork(2), wait(2)
