@@ -13,3 +13,5 @@ A basic UNIX command interpreter clone, mimicking the behavior of `/bin/sh`.
 ```bash
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 ./hsh
+
+##..
