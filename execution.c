@@ -1,5 +1,8 @@
 #include "shell.h"
 
+
+int run_command(char *cmd_path, char **args);
+
 /**
  * execute_cmd - Executes a command with path resolution
  * @args: Argument vector (command and its arguments)
@@ -33,7 +36,7 @@ return (127);
 }
 else
 {
-/* No '/', resolving using PATH */
+/* No '/', resolve using PATH */
 cmd_path = find_command(args[0]);
 if (cmd_path == NULL)
 {
@@ -41,7 +44,7 @@ fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
 return (127);
 }
 }
-/* Fork and execute */
+/* Fork and exec */
 status = run_command(cmd_path, args);
 free(cmd_path);
 return (status);
