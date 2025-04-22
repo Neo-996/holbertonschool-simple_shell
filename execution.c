@@ -1,8 +1,5 @@
 #include "shell.h"
 
-
-int run_command(char *cmd_path, char **args);
-
 /**
  * execute_cmd - Executes a command with path resolution
  * @args: Argument vector (command and its arguments)
