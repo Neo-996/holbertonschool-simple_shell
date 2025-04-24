@@ -65,11 +65,13 @@ int run_command(char *cmd_path, char **args)
 	if (pid == 0)
 	{
 		/* Child process: Execute the command */
-		execve(cmd_path, args, environ);
+	  if (execve(cmd_path, args, environ) == -1) /* if execve fails */
+	    {
 		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
 		free(cmd_path);
-		exit(127);
-	}
+		exit(127); /* Return 127 when the command is not found */
+	    }
+	    }
 	else if (pid < 0)
 	{
 		/* Fork failed */
@@ -85,7 +87,7 @@ int run_command(char *cmd_path, char **args)
 		}
 	}
 
-	return (0);
+	return (0); /* Return 0 if the command was executed successfully */
 }
 
 /**
@@ -110,7 +112,7 @@ int execute_cmd(char **args)
 	if (cmd_path == NULL)
 	{
 		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
-		return (127);
+		return (127); /* Return 127 if command not found */
 	}
 
 	exit_status = run_command(cmd_path, args);
