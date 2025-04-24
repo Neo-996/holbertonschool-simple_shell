@@ -14,7 +14,7 @@ char *find_command(char *command)
 {
 char *path_env = NULL;
 char *path_copy, *dir;
-char full_path[1024];
+char *full_path;
 int i = 0;
 
 /* Search for the PATH variable in the environment */
@@ -31,7 +31,7 @@ while (environ[i])
 
  /* If PATH is not set or empty, return NULL */
 
- if (!path_env || strlen(path_env) == 0)
+ if (!path_env || path_env[0] == '\0')
    return (NULL);
 
  /* Split PATH into directories and check each one */
