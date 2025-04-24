@@ -31,28 +31,33 @@ int handle_builtins(char **args)
 char *resolve_command_path(char **args)
 {
 	char *cmd_path = NULL;
-	char *path_env = getenv("PATH");
-
-	/* Check if PATH is empty */
-	 if (path_env == NULL || *path_env == '\0')
-	   {
-	     return (NULL);
-	   }
+	char *path_env = NULL;
+	int i = 0;
 
 	/* If the command contains '/', assume it's a path */
 	if (strchr(args[0], '/'))
 	{
 		if (access(args[0], X_OK) == 0)
-			cmd_path = strdup(args[0]); /* Use the given path */
-		else
+			return (strdup(args[0]));
 			return (NULL);
 	}
-	else
-	{
-		/* Free memory used for command path */
-		cmd_path = find_command(args[0]);
+	/* Manually find PATH from the environment */
+	while (environ[i])
+	  {
+	    if (strncmp(environ[i], "PATH=", 5) == 0)
+	      {
+		path_env = environ[i] + 5;  /* Skip "PATH=" */
+		break;
 	}
+	    i++
+	      }
 
+	/* If PATH is empty or not set, we can't find the command */
+	if (!path_env || *path_env == '\0')
+	  return (NULL);
+
+	/* Use your existing find_command() to resolve the path */
+	cmd_path = find_command(args[0]);
 	return (cmd_path);
 }
 
