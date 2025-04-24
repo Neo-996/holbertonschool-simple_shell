@@ -12,6 +12,7 @@
 extern char **environ;
 
 /* Function Prototypes */
+int handle_builtins(char **args);
 int execute_cmd(char **args);
 int run_command(char *cmd_path, char **args);
 char *find_command(char *command);

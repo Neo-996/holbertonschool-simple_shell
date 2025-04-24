@@ -9,7 +9,6 @@
 char *find_command(char *command)
 {
 char *path_env = NULL; /* holds the PATH environment variable */
-char *path_copy, *dir; /* for duplicating and splitting the PATH string */
 char full_path[1024];  /* buffer for constructing full command paths */
 int i = 0;
 
@@ -25,33 +24,30 @@ break;
 i++;
 }
 
-/* Stop if PATH variable wasn't found */
-if (!path_env)
-return (NULL);
+ /* If PATH not found or is empty, return NULL */
+ if (!path_env || *path_env == '\0')
+   return (NULL);
 
-/* Duplicate PATH to safely manipulate it */
-path_copy = strdup(path_env);
-dir = strtok(path_copy, ":"); /* separate PATH into directories using ':' */
+ path_copy = strdup(path_env);
+ if (!path_copy)
+   return (NULL); /* Handle malloc failure */
 
-/* Go through each directory in PATH */
-while (dir)
-{
-	sprintf(full_path, "%s/%s", dir, command); 
+ dir = strtok(path_copy, ":");
+ while (dir)
+   {
+     snprintf(full_path, sizeof(full_path), "%s/%s", dir, command);
 
-	if (access(full_path, X_OK) == 0)
-	{
-		free(path_copy);
-		return (strdup(full_path));
-	}
-	dir = strtok(NULL, ":"); /* move to next directory in the PATH list */
+     if (access(full_path, X_OK) == 0)
+       {
+	 free(path_copy);
+	 return (strdup(full_path));
+       }
+
+     dir = strtok(NULL, ":");
+   }
+ free(path_copy);
+ return (NULL); /* Command not found */
 }
-
-/* Command not found in any PATH directory */
-free(path_copy);
-return (NULL);
-}
-
-
 
 
 /**

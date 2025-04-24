@@ -9,10 +9,16 @@ int handle_builtins(char **args)
 {
 	int i;
 
-	/* Process the built-in "exit" command */
+	if (args[0] == NULL)
+	  return (0);
+
+	/* built-in: exit */
 	if (strcmp(args[0], "exit") == 0)
-		exit(0);
-	/* Process the built-in "env" command */
+	  {
+		exit(0); /* Exits the shell with status 0 */
+	  }
+	
+	/* Built-in: env */
 	if (strcmp(args[0], "env") == 0)
 	{
 		for (i = 0; environ[i]; i++)
