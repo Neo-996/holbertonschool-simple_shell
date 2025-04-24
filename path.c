@@ -28,16 +28,10 @@ while (environ[i])
  
 
  /* If PATH not found or is empty, return NULL */
- if (!path_env || *path_env == '\0')
-   {
-     snprintf(full_path, sizeof(full_path), "./%s", command);
-     if (access(full_path, X_OK) == 0)
-       {
-	 return (strdup(full_path));  /* Return the full path of the command */
-       }
+ if (path_env == NULL || *path_env == '\0')
    return (NULL);
-   }
- path_copy = strdup(path_env);
+ 
+    path_copy = strdup(path_env);
  if (!path_copy)
    {
      perror("malloc");
