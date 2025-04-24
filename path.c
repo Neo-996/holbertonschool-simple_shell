@@ -9,23 +9,26 @@
 char *find_command(char *command)
 {
 char *path_env = NULL; /* holds the PATH environment variable */
-char full_path[1024];  /* buffer for constructing full command paths */
+char *path_copy = NULL; /* duplicated PATH value */
+char *dir = NULL; /* each directory in PATH */
+char full_path[1024];  /* buffer for building command paths */
 int i = 0;
 
 /* search PATH manually inside environ */
 
 while (environ[i])
-{
-if (strncmp(environ[i], "PATH=", 5) == 0)
-{
-path_env = environ[i] + 5; /* skip "PATH=" and point to the actual value */
-break;
-}
-i++;
-}
+  {
+    if (strncmp(environ[i], "PATH=", 5) == 0)
+      {
+	path_env = environ[i] + 5; /* skip "PATH=" and point to the actual value */
+	break;
+      }
+    i++;
+  }
+ 
 
  /* If PATH not found or is empty, return NULL */
- if (!path_env || *path_env == '\0')
+ if (!path_env)
    return (NULL);
 
  path_copy = strdup(path_env);
@@ -35,15 +38,13 @@ i++;
  dir = strtok(path_copy, ":");
  while (dir)
    {
-     snprintf(full_path, sizeof(full_path), "%s/%s", dir, command);
+     sprintf(full_path, "%s/%s", dir, command);
 
      if (access(full_path, X_OK) == 0)
        {
 	 free(path_copy);
 	 return (strdup(full_path));
        }
-
-     dir = strtok(NULL, ":");
    }
  free(path_copy);
  return (NULL); /* Command not found */
