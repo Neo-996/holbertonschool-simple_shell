@@ -85,8 +85,13 @@ int run_command(char *cmd_path, char **args)
 
 	pid = fork();
 
-	if (pid == 0)
+	if (pid == -1)
 	{
+	  perror("fork");
+	  return (127);
+	}
+	else if (pid == 0)
+	  {
 		/* Child process: Execute the command */
 	  if (execve(cmd_path, args, environ) == -1) /* if execve fails */
 	    {
@@ -94,30 +99,21 @@ int run_command(char *cmd_path, char **args)
 		free(cmd_path);
 		exit(127); /* Return 127 when the command is not found */
 	    }
-	    }
-	else if (pid < 0)
-	{
-		/* Fork failed */
-		perror("fork");
-		return (127);
-	}
+	  }
 	else
 	{
-		/* Parent process: Wait for the child to finish */
+		/* Parent process: Wait for child and return its status */
 	  waitpid(pid, &status, 0);
-		{
-			if (WIFEXITED(status))
-				return (WEXITSTATUS(status));
-		}
+	  if (WIFEXITED(status))
+	    return (WEXITSTATUS(status));
 	}
-
-	return (127); /* return "command not found" if execution fails */
+return (127);
 }
 
 /**
  * execute_cmd - Executes a command with path resolution
  * @args: Argument vector (command and its arguments)
- * Return: 127 if command not found, or exit status
+ * Return: 127 if command not found, otherwise child's exit status
  */
 int execute_cmd(char **args)
 {
