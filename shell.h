@@ -15,6 +15,7 @@ extern char **environ;
 int execute_cmd(char **args);
 int run_command(char *cmd_path, char **args);
 char *find_command(char *command);
+char *resolve_command_path(char **args);
 char **parse_line(char *line);
 int has_path_env(void);
 

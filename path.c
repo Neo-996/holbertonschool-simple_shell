@@ -17,57 +17,91 @@ char *path_copy, *dir;
 char full_path[1024];
 int i = 0;
 
-/* search PATH manually inside environ */
+/* Search for the PATH variable in the environment */
 
 while (environ[i])
-{
-if (strncmp(environ[i], "PATH=", 5) == 0)
-{
-path_env = environ[i] + 5;
-break;
-}
-i++;
-}
+  {
+  if (strncmp(environ[i], "PATH=", 5) == 0)
+    {
+      path_env = environ[i] + 5;
+      break;
+    }
+  i++;
+  }
 
-if (!path_env)
-return (NULL);
+ /* If PATH is not set or empty, return NULL */
 
+ if (!path_env || strlen(path_env) == 0)
+   return (NULL);
+
+ /* Split PATH into directories and check each one */
+ 
 path_copy = strdup(path_env);
-dir = strtok(path_copy, ":");
+if (!path_copy)
+  {
+   perror("strdup");
+   return (NULL);
+  }
 
+ dir = strtok(path_copy, ":");
 while (dir)
 {
+  full_path = malloc(strlen(dir) + strlen(command) + 2); /* +2 for '/' and '\0' */
+  if (!full_path)
+    {
+      perror("malloc");
+       free(path_copy);
+       return (NULL);
+    }
+  
 sprintf(full_path, "%s/%s", dir, command);
 if (access(full_path, X_OK) == 0)
 {
 free(path_copy);
-return (strdup(full_path));
+return (full_path); /* Command found */
 }
+ free(full_path); /* Free full_path before trying the next directory */
 dir = strtok(NULL, ":");
 }
 
 free(path_copy);
-return (NULL);
+return (NULL); /* Command not found */
 }
 
 
 
 
 /**
- * has_path_env - Checks if the PATH variable is present in the environment
- *
- * Return: 1 if PATH is found, 0 otherwise
+ * resolve_command_path - Resolves the full path of a command
+ * @args: Array of command arguments
+
+ * Return: Full path to the command if found, otherwise NULL
  */
 
-int has_path_env(void)
+char *resolve_command_path(char **args)
 {
-	int i = 0;
-
-	while (environ[i])
+  char *cmd_path = NULL;
+  /* If the command contains '/', assume it's an explicit path */
+  if (strchr(args[0], '/'))
+    {
+      if (access(args[0], X_OK) == 0)
+	 cmd_path = strdup(args[0]); /* Use the given path */
+      else
+	return (NULL);
+    }
+  else
+    {
+      /* If PATH is empty, check for commands that are not built-in */
+      if (has_path_env() && strlen(getenv("PATH")) > 0)
 	{
-		if (strncmp(environ[i], "PATH=", 5) == 0)
-			return (1);
-		i++;
+	  cmd_path = find_command(args[0]);
 	}
-	return (0);
+      else
+	{
+	  /* If PATH is empty, only check if the user supplied a path */
+	  if (access(args[0], X_OK) == 0)
+	     cmd_path = strdup(args[0]);
+	}
+    }
+  return (cmd_path);
 }
