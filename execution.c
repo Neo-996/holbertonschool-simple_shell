@@ -120,25 +120,22 @@ int execute_cmd(char **args)
 	if (args[0] == NULL)
 		return (0);
 
-	/* Check and handle built-in commands */
+	/* Handle built-ins */
 	if (handle_builtins(args))
 		return (0);
 
-	/* Resolve the full path of the command */
+	/* Resolve command path */
 	cmd_path = resolve_command_path(args);
+	
 	if (cmd_path == NULL)
 	{
 		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
 		return (127); /* Return 127 if command not found */
 	}
 
+	 /* Run the command and get its exit status */
 	exit_status = run_command(cmd_path, args);
 
-	if (cmd_path != NULL)
-	{
-		free(cmd_path);
-		cmd_path = NULL;
-	}
-
+	free(cmd_path);
 	return (exit_status);
 }
