@@ -31,6 +31,13 @@ int handle_builtins(char **args)
 char *resolve_command_path(char **args)
 {
 	char *cmd_path = NULL;
+	char *path_env = getenv("PATH");
+
+	/* Check if PATH is empty */
+	 if (path_env == NULL || *path_env == '\0')
+	   {
+	     return (NULL);
+	   }
 
 	/* If the command contains '/', assume it's a path */
 	if (strchr(args[0], '/'))
