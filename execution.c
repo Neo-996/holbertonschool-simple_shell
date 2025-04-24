@@ -76,7 +76,7 @@ char *resolve_command_path(char **args)
  * run_command - Forks and executes a command
  * @cmd_path: Full path to command
  * @args: Argument vector
- * Return: Command exit status or 0
+ * Return: Command exit status or 127 if not found
  */
 int run_command(char *cmd_path, char **args)
 {
@@ -99,11 +99,12 @@ int run_command(char *cmd_path, char **args)
 	{
 		/* Fork failed */
 		perror("fork");
+		return (127);
 	}
 	else
 	{
 		/* Parent process: Wait for the child to finish */
-		if (waitpid(pid, &status, 0) != -1)
+	  waitpid(pid, &status, 0);
 		{
 			if (WIFEXITED(status))
 				return (WEXITSTATUS(status));
@@ -136,14 +137,12 @@ int execute_cmd(char **args)
 	if (cmd_path == NULL)
 	{
 		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
-		return (127); /* Return 127 if command not found */
+		return (127); /* Ensure 127 is returned when command not found  */
 	}
 
 	 /* Run the command and get its exit status */
 	exit_status = run_command(cmd_path, args);
-	if (exit_status == 0 && access(cmd_path, X_OK) != 0)
-	   exit_status = 127;
-
+	
 	free(cmd_path);
 	return (exit_status);
 }
