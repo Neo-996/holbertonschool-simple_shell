@@ -28,24 +28,37 @@ while (environ[i])
  
 
  /* If PATH not found or is empty, return NULL */
- if (!path_env)
+ if (!path_env || *path_env == '\0')
+   {
+     snprintf(full_path, sizeof(full_path), "./%s", command);
+     if (access(full_path, X_OK) == 0)
+       {
+	 return (strdup(full_path));  /* Return the full path of the command */
+       }
    return (NULL);
-
+   }
  path_copy = strdup(path_env);
  if (!path_copy)
+   {
+     perror("malloc");
    return (NULL); /* Handle malloc failure */
-
- dir = strtok(path_copy, ":");
+   }
+ 
+ dir = strtok(path_copy, ":"); /* separate PATH into directories using ':' */
+ 
  while (dir)
    {
-     sprintf(full_path, "%s/%s", dir, command);
+     snprintf(full_path, sizeof(full_path), "%s/%s", dir, command);
 
+     /* Check if the command exists and is executable */
      if (access(full_path, X_OK) == 0)
        {
 	 free(path_copy);
-	 return (strdup(full_path));
+	 return (strdup(full_path)); /* Return a copy of the full path */
        }
+     dir = strtok(NULL, ":");  /* move to next directory in the PATH list */
    }
+ /* Command not found in any PATH directory */
  free(path_copy);
  return (NULL); /* Command not found */
 }
