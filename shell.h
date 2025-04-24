@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+/* external variable to access the environment list */
 extern char **environ;
 
 /* Function Prototypes */
@@ -15,5 +16,6 @@ int execute_cmd(char **args);
 int run_command(char *cmd_path, char **args);
 char *find_command(char *command);
 char **parse_line(char *line);
+int has_path_env(void);
 
 #endif /* SHELL_H */
