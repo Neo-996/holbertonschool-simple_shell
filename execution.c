@@ -104,7 +104,7 @@ int run_command(char *cmd_path, char **args)
 		}
 	}
 
-	return (0); /* Return 0 if the command was executed successfully */
+	return (127); /* return "command not found" if execution fails */
 }
 
 /**
@@ -135,6 +135,8 @@ int execute_cmd(char **args)
 
 	 /* Run the command and get its exit status */
 	exit_status = run_command(cmd_path, args);
+	if (exit_status == 0 && access(cmd_path, X_OK) != 0)
+	   exit_status = 127;
 
 	free(cmd_path);
 	return (exit_status);
