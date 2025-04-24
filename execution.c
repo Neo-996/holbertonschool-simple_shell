@@ -38,8 +38,13 @@ char *resolve_command_path(char **args)
 	if (strchr(args[0], '/'))
 	{
 		if (access(args[0], X_OK) == 0)
+		  {
 			return (strdup(args[0]));
+		  }
+		else
+		  {
 			return (NULL);
+		  }
 	}
 	/* Manually find PATH from the environment */
 	while (environ[i])
@@ -49,7 +54,7 @@ char *resolve_command_path(char **args)
 		path_env = environ[i] + 5;  /* Skip "PATH=" */
 		break;
 	}
-	    i++
+	    i++;
 	      }
 
 	/* If PATH is empty or not set, we can't find the command */
