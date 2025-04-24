@@ -24,6 +24,32 @@ int handle_builtins(char **args)
 }
 
 /**
+  * resolve_command_path - Finds the full path of a command
+ * @args: Array of command arguments
+ * Return: Full path to the command if found, otherwise NULL
+ */
+char *resolve_command_path(char **args)
+{
+	char *cmd_path = NULL;
+
+	/* If the command contains '/', assume it's a path */
+	if (strchr(args[0], '/'))
+	{
+		if (access(args[0], X_OK) == 0)
+			cmd_path = strdup(args[0]); /* Use the given path */
+		else
+			return (NULL);
+	}
+	else
+	{
+		/* Free memory used for command path */
+		cmd_path = find_command(args[0]);
+	}
+
+	return (cmd_path);
+}
+
+/**
  * run_command - Forks and executes a command
  * @cmd_path: Full path to command
  * @args: Argument vector

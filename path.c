@@ -1,107 +1,75 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 #include "shell.h"
 
 /**
- * find_command - finds the path of a given command
- * @command: the command to search for
+ * find_command - Locates the full path of a specified command
+ * @command: the name of the command to find
  *
- * Return: the full path to the command, or NULL if not found
+ * Return: full path to the command if found, otherwise NULL
  */
 char *find_command(char *command)
 {
-char *path_env = NULL;
-char *path_copy, *dir;
-char *full_path;
+char *path_env = NULL; /* holds the PATH environment variable */
+char *path_copy, *dir; /* for duplicating and splitting the PATH string */
+char full_path[1024];  /* buffer for constructing full command paths */
 int i = 0;
 
-/* Search for the PATH variable in the environment */
+/* search PATH manually inside environ */
 
 while (environ[i])
-  {
-  if (strncmp(environ[i], "PATH=", 5) == 0)
-    {
-      path_env = environ[i] + 5;
-      break;
-    }
-  i++;
-  }
+{
+if (strncmp(environ[i], "PATH=", 5) == 0)
+{
+path_env = environ[i] + 5; /* skip "PATH=" and point to the actual value */
+break;
+}
+i++;
+}
 
- /* If PATH is not set or empty, return NULL */
+/* Stop if PATH variable wasn't found */
+if (!path_env)
+return (NULL);
 
- if (!path_env || path_env[0] == '\0')
-   return (NULL);
-
- /* Split PATH into directories and check each one */
- 
+/* Duplicate PATH to safely manipulate it */
 path_copy = strdup(path_env);
-if (!path_copy)
-  {
-   perror("strdup");
-   return (NULL);
-  }
+dir = strtok(path_copy, ":"); /* separate PATH into directories using ':' */
 
- dir = strtok(path_copy, ":");
+/* Go through each directory in PATH */
 while (dir)
 {
-  full_path = malloc(strlen(dir) + strlen(command) + 2); /* +2 for '/' and '\0' */
-  if (!full_path)
-    {
-      perror("malloc");
-       free(path_copy);
-       return (NULL);
-    }
-  
-sprintf(full_path, "%s/%s", dir, command);
-if (access(full_path, X_OK) == 0)
-{
-free(path_copy);
-return (full_path); /* Command found */
-}
- free(full_path); /* Free full_path before trying the next directory */
-dir = strtok(NULL, ":");
+	sprintf(full_path, "%s/%s", dir, command); 
+
+	if (access(full_path, X_OK) == 0)
+	{
+		free(path_copy);
+		return (strdup(full_path));
+	}
+	dir = strtok(NULL, ":"); /* move to next directory in the PATH list */
 }
 
+/* Command not found in any PATH directory */
 free(path_copy);
-return (NULL); /* Command not found */
+return (NULL);
 }
 
 
 
 
 /**
- * resolve_command_path - Resolves the full path of a command
- * @args: Array of command arguments
-
- * Return: Full path to the command if found, otherwise NULL
+ * has_path_env - Determines if the environment contains a PATH variable
+ *
+ * Return: 1 if PATH is found, 0 otherwise
  */
 
-char *resolve_command_path(char **args)
+int has_path_env(void)
 {
-  char *cmd_path = NULL;
-  /* If the command contains '/', assume it's an explicit path */
-  if (strchr(args[0], '/'))
-    {
-      if (access(args[0], X_OK) == 0)
-	 cmd_path = strdup(args[0]); /* Use the given path */
-      else
-	return (NULL);
-    }
-  else
-    {
-      /* If PATH is empty, check for commands that are not built-in */
-      if (has_path_env() && strlen(getenv("PATH")) > 0)
+	int i = 0;
+
+	while (environ[i])
 	{
-	  cmd_path = find_command(args[0]);
+		if (strncmp(environ[i], "PATH=", 5) == 0)
+			return (1);
+		i++;
 	}
-      else
-	{
-	  /* If PATH is empty, only check if the user supplied a path */
-	  if (access(args[0], X_OK) == 0)
-	     cmd_path = strdup(args[0]);
-	}
-    }
-  return (cmd_path);
+	/* PATH variable is not present */
+	return (0);
 }
